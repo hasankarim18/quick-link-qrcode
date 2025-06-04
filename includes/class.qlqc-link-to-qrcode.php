@@ -6,6 +6,7 @@ class QLQC_LINK_TO_QRCODE
     public function __construct()
     {
         add_filter('the_content', [$this, 'link_to_qrcode']);
+        add_action('wp_footer', [$this, 'hide_with_js']);
     }
     function link_to_qrcode($content)
     {
@@ -42,11 +43,15 @@ class QLQC_LINK_TO_QRCODE
         $border_color = apply_filters('qlqc_qrcode_border_color', '000');
         ob_start();
         ?>
-        <span style="position: fixed; bottom:20px;<?php echo esc_html($position); ?>:20px;" class="qlqc-qrcode_container">
+        <span class="qlqc_qrcode_container" style="position: fixed; bottom:20px;<?php echo esc_html($position); ?>:20px;"
+            class="qlqc-qrcode_container">
             <span
                 style="display: flex; flex-direction: column; align-items: center; justify-content: center; border:2px solid #<?php echo esc_html($border_color); ?>; padding:10px; border-radius: 10px;">
                 <span>Scan me</span>
                 <img src="<?php echo esc_url($qr_url); ?>" />
+                <span class="display:block; width:100%;">
+                    <button id="qlqc_hide_qrcode">Hide me</button>
+                </span>
             </span>
         </span>
         <?php
@@ -54,5 +59,23 @@ class QLQC_LINK_TO_QRCODE
 
         return $qr_html . $content;
     }
+
+    /*********** */
+    function hide_with_js()
+    {
+        ?>
+        <script>
+            const hideButton = document.getElementById('qlqc_hide_qrcode');
+            const qr_parent = hideButton.closest('.qlqc_qrcode_container');
+            hideButton.addEventListener('click', () => {
+                qr_parent.style.display = 'none'
+            })
+        </script>
+        <?php
+
+    }
+
+
+
 }
 
